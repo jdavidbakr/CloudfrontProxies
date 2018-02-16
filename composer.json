@@ -1,0 +1,31 @@
+{
+    "name": "jdavidbakr/cloudfront-proxies",
+    "description": "Sets proxy settings for Cloudfront in a Laravel project",
+    "keywords": ["cloudfront", "laravel", "trusted proxies"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "J David Baker",
+            "email": "me@jdavidbaker.com",
+            "homepage": "http://www.jdavidbaker.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "laravel/framework": "5.6.*",
+        "guzzlehttp/guzzle": "^6.3"
+    },
+    "require-dev": {
+        "mockery/mockery": "~1.0",
+        "phpunit/phpunit": "~7.0",
+        "orchestra/testbench": "^3.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "jdavidbakr\\CloudfrontProxies\\": "src"
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    }
+}
