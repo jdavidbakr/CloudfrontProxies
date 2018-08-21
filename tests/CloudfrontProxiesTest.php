@@ -4,6 +4,7 @@ use Orchestra\Testbench\TestCase as BaseTestCase;
 use jdavidbakr\CloudfrontProxies\CloudfrontProxies;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client as Guzzle;
+use Illuminate\Routing\UrlGenerator;
 
 class CloudfrontProxiesTest extends BaseTestCase {
 
@@ -100,6 +101,8 @@ class CloudfrontProxiesTest extends BaseTestCase {
             [], // files
             [
                 'HTTP_CLOUDFRONT_FORWARDED_PROTO'=>'https',
+                'REMOTE_ADDR'=>'127.0.0.1',
+                'HTTP_HOST'=>'localhost',
             ], // server
             null // content
         );
@@ -120,9 +123,11 @@ class CloudfrontProxiesTest extends BaseTestCase {
                 ])
             ]));
         app()->instance(Guzzle::class, $mock);
+        $routes = app('router')->getRoutes();
+        $url = new UrlGenerator($routes, $request);
 
         $middleware->handle($request, function() {});
 
-        $this->assertEquals('https://localhost/', url('/'));
+        $this->assertEquals('https://localhost', $url->to('/'));
     }
 }
