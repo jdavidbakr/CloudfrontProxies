@@ -6,7 +6,8 @@ use Illuminate\Http\Request;
 use GuzzleHttp\Client as Guzzle;
 use Illuminate\Routing\UrlGenerator;
 
-class CloudfrontProxiesTest extends BaseTestCase {
+class CloudfrontProxiesTest extends BaseTestCase
+{
 
     /**
      * @test
@@ -42,7 +43,8 @@ class CloudfrontProxiesTest extends BaseTestCase {
             ]));
         app()->instance(Guzzle::class, $mock);
 
-        $middleware->handle($request, function() {});
+        $middleware->handle($request, function () {
+        });
 
         // Verify that trusted proxies got properly set
         $this->assertEquals(['127.0.0.1/16'], $request->getTrustedProxies());
@@ -82,7 +84,8 @@ class CloudfrontProxiesTest extends BaseTestCase {
             ]));
         app()->instance(Guzzle::class, $mock);
 
-        $middleware->handle($request, function() {});
+        $middleware->handle($request, function () {
+        });
 
         // Verify that trusted proxies got properly set
         $this->assertEquals('https', $request->header('x-forwarded-proto'));
@@ -126,7 +129,8 @@ class CloudfrontProxiesTest extends BaseTestCase {
         $routes = app('router')->getRoutes();
         $url = new UrlGenerator($routes, $request);
 
-        $middleware->handle($request, function() {});
+        $middleware->handle($request, function () {
+        });
 
         $this->assertEquals('https://localhost', $url->to('/'));
     }

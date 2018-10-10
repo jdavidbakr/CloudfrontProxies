@@ -18,7 +18,7 @@ class CloudfrontProxies
      */
     public function handle($request, Closure $next)
     {
-        if($request->header('cloudfront-forwarded-proto')) {
+        if ($request->header('cloudfront-forwarded-proto')) {
             $this->loadTrustedProxies($request);
             $this->setCloudfrontHeaders($request);
         }
@@ -31,7 +31,7 @@ class CloudfrontProxies
     protected function loadTrustedProxies($request)
     {
         // Get the CloudFront IP addresses
-        $proxies = Cache::remember('cloudfront-proxy-ip-addresses', now()->addHour(), function() {
+        $proxies = Cache::remember('cloudfront-proxy-ip-addresses', now()->addHour(), function () {
             $ip_range_data = 'https://ip-ranges.amazonaws.com/ip-ranges.json';
             $client = app()->make(Guzzle::class);
             $res = $client->get($ip_range_data);
