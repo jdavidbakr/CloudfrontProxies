@@ -48,6 +48,6 @@ class CloudfrontProxies
     protected function setCloudfrontHeaders($request)
     {
         $headers = $request->headers;
-        $headers->add(['x-forwarded-proto'=>$headers->get('cloudfront-forwarded-proto')]);
+        $headers->add(['x-forwarded-proto' => $headers->get('cloudfront-forwarded-proto')]);
     }
 }

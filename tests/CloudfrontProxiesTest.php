@@ -21,7 +21,7 @@ class CloudfrontProxiesTest extends BaseTestCase
             [], // cookies
             [], // files
             [
-                'HTTP_CLOUDFRONT_FORWARDED_PROTO'=>'https'
+                'HTTP_CLOUDFRONT_FORWARDED_PROTO' => 'https'
             ], // server
             null // content
         );
@@ -31,12 +31,12 @@ class CloudfrontProxiesTest extends BaseTestCase
             ->with('https://ip-ranges.amazonaws.com/ip-ranges.json')
             ->once()
             ->andReturn(Mockery::mock([
-                'getBody'=>json_encode([
-                    'prefixes'=>[
+                'getBody' => json_encode([
+                    'prefixes' => [
                         [
-                            'ip_prefix'=>'127.0.0.1/16',
-                            'region'=>'GLOBAL',
-                            'service'=>'CLOUDFRONT'
+                            'ip_prefix' => '127.0.0.1/16',
+                            'region' => 'GLOBAL',
+                            'service' => 'CLOUDFRONT'
                         ]
                     ]
                 ])
@@ -62,7 +62,7 @@ class CloudfrontProxiesTest extends BaseTestCase
             [], // cookies
             [], // files
             [
-                'HTTP_CLOUDFRONT_FORWARDED_PROTO'=>'https',
+                'HTTP_CLOUDFRONT_FORWARDED_PROTO' => 'https',
             ], // server
             null // content
         );
@@ -72,12 +72,12 @@ class CloudfrontProxiesTest extends BaseTestCase
             ->with('https://ip-ranges.amazonaws.com/ip-ranges.json')
             ->once()
             ->andReturn(Mockery::mock([
-                'getBody'=>json_encode([
-                    'prefixes'=>[
+                'getBody' => json_encode([
+                    'prefixes' => [
                         [
-                            'ip_prefix'=>'127.0.0.1/16',
-                            'region'=>'GLOBAL',
-                            'service'=>'CLOUDFRONT'
+                            'ip_prefix' => '127.0.0.1/16',
+                            'region' => 'GLOBAL',
+                            'service' => 'CLOUDFRONT'
                         ]
                     ]
                 ])
@@ -103,9 +103,9 @@ class CloudfrontProxiesTest extends BaseTestCase
             [], // cookies
             [], // files
             [
-                'HTTP_CLOUDFRONT_FORWARDED_PROTO'=>'https',
-                'REMOTE_ADDR'=>'127.0.0.1',
-                'HTTP_HOST'=>'localhost',
+                'HTTP_CLOUDFRONT_FORWARDED_PROTO' => 'https',
+                'REMOTE_ADDR' => '127.0.0.1',
+                'HTTP_HOST' => 'localhost',
             ], // server
             null // content
         );
@@ -115,12 +115,12 @@ class CloudfrontProxiesTest extends BaseTestCase
             ->with('https://ip-ranges.amazonaws.com/ip-ranges.json')
             ->once()
             ->andReturn(Mockery::mock([
-                'getBody'=>json_encode([
-                    'prefixes'=>[
+                'getBody' => json_encode([
+                    'prefixes' => [
                         [
-                            'ip_prefix'=>'127.0.0.1/16',
-                            'region'=>'GLOBAL',
-                            'service'=>'CLOUDFRONT'
+                            'ip_prefix' => '127.0.0.1/16',
+                            'region' => 'GLOBAL',
+                            'service' => 'CLOUDFRONT'
                         ]
                     ]
                 ])
