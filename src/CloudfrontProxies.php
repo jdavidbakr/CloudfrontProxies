@@ -42,7 +42,7 @@ class CloudfrontProxies
                 ->pluck('ip_prefix');
             return $data->toArray();
         });
-        $request->setTrustedProxies($proxies, Request::HEADER_X_FORWARDED_ALL);
+        $request->setTrustedProxies(array_merge($request->getTrustedProxies(), $proxies), Request::HEADER_X_FORWARDED_ALL);
     }
 
     protected function setCloudfrontHeaders($request)
