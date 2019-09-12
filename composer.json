@@ -1,31 +1,37 @@
 {
-    "name": "jdavidbakr/cloudfront-proxies",
-    "description": "Sets proxy settings for Cloudfront in a Laravel project",
-    "keywords": ["cloudfront", "laravel", "trusted proxies"],
-    "license": "MIT",
-    "authors": [{
-        "name": "J David Baker",
-        "email": "me@jdavidbaker.com",
-        "homepage": "http://www.jdavidbaker.com",
-        "role": "Developer"
-    }],
-    "require": {
-        "laravel/framework": "5.6.*|5.7.*|5.8.*|6.0.*",
-        "guzzlehttp/guzzle": "^6.3"
-    },
-    "require-dev": {
-        "mockery/mockery": "~1.0",
-        "phpunit/phpunit": "~8.0",
-        "orchestra/testbench": "~4.0"
-    },
-    "autoload": {
-        "psr-4": {
-            "jdavidbakr\\CloudfrontProxies\\": "src"
-        }
-    },
-    "scripts": {
-        "test": "phpunit"
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+  "name": "jdavidbakr/cloudfront-proxies",
+  "description": "Sets proxy settings for Cloudfront in a Laravel project",
+  "keywords": [
+    "cloudfront",
+    "laravel",
+    "trusted proxies"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "J David Baker",
+      "email": "me@jdavidbaker.com",
+      "homepage": "http://www.jdavidbaker.com",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "laravel/framework": "5.6.*|5.7.*|5.8.*|6.0.*",
+    "guzzlehttp/guzzle": "^6.3"
+  },
+  "require-dev": {
+    "mockery/mockery": "~1.0",
+    "phpunit/phpunit": "~7.0|~8.0",
+    "orchestra/testbench": "~3.0|~4.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "jdavidbakr\\CloudfrontProxies\\": "src"
+    }
+  },
+  "scripts": {
+    "test": "phpunit"
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
 }
