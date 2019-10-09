@@ -21,7 +21,7 @@ This package contains a simple middleware that does two very important tasks:
 1. Downloads the CloudFront IP addresses into the trusted proxy IP addresses. This is cached according to your cache settings for one hour, so you are not making this call on every request.
 2. Adds the `X-Forwarded-Proto` header to your requests based on the `Cloudfront-Forwarded-Proto` value. This helps Symfony behave as if the original headers were what it needed in the first place.
 
-This middleware only fires if the `Cloudfront-Forwarded-Proto` header exists in the incoming headers, so it is ignored if you are using other load balancers or accessing the server directly.
+This middleware only fires if the `Cloudfront-Forwarded-Proto` header exists in the incoming headers, so it is ignored if you are using other load balancers or accessing the server directly.  Note that CloudFront does not send this header by default - it must be explicitly whitelisted.  (See the CloudFront documentation for more information on sending headers and cookies)
 
 ## Usage
 
