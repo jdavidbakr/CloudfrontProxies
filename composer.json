@@ -7,22 +7,20 @@
     "trusted proxies"
   ],
   "license": "MIT",
-  "authors": [
-    {
-      "name": "J David Baker",
-      "email": "me@jdavidbaker.com",
-      "homepage": "http://www.jdavidbaker.com",
-      "role": "Developer"
-    }
-  ],
+  "authors": [{
+    "name": "J David Baker",
+    "email": "me@jdavidbaker.com",
+    "homepage": "http://www.jdavidbaker.com",
+    "role": "Developer"
+  }],
   "require": {
-    "laravel/framework": "5.6.*|5.7.*|5.8.*|6.*|7.*",
+    "illuminate/support": "5.6.*|5.7.*|5.8.*|6.*|7.*|8.*",
     "guzzlehttp/guzzle": "^6.3"
   },
   "require-dev": {
     "mockery/mockery": "~1.0",
     "phpunit/phpunit": "~7.0|~8.0",
-    "orchestra/testbench": "~3.0|~4.0|~5.0"
+    "orchestra/testbench": "~3.0|~4.0|~5.0|6.x-dev"
   },
   "autoload": {
     "psr-4": {

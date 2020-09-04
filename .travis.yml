@@ -11,21 +11,27 @@ php:
   - 7.3
 
 env:
-  - LARAVEL_VERSION=5.6.*
-  - LARAVEL_VERSION=5.7.*
+  - LARAVEL_VERSION=8.x-dev
+  - LARAVEL_VERSION=7.x-dev
+  - LARAVEL_VERSION=6.x-dev
   - LARAVEL_VERSION=5.8.*
-  - LARAVEL_VERSION=6.0.*
+  - LARAVEL_VERSION=5.7.*
+  - LARAVEL_VERSION=5.6.*
 
 matrix:
   # For each PHP version we exclude the coverage env, except for PHP 7.1
   exclude:
     - php: 7.1
-      env: LARAVEL_VERSION=6.0.*
+      env: LARAVEL_VERSION=6.x-dev
+    - php: 7.1
+      env: LARAVEL_VERSION=7.x-dev
+    - php: 7.1
+      env: LARAVEL_VERSION=8.x-dev
     - php: 7.2
-      env: LARAVEL_VERSION=6.0.*
+      env: LARAVEL_VERSION=8.x-dev
 
 before_install:
-  - echo "memory_limit=2G" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+  - echo "memory_limit=-1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
   - cp ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini ~/xdebug.ini
   - phpenv config-rm xdebug.ini
   - composer global require hirak/prestissimo --update-no-dev
