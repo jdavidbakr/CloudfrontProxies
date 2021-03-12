@@ -9,6 +9,11 @@ use jdavidbakr\CloudfrontProxies\CloudfrontProxies;
 
 class CloudfrontProxiesTest extends BaseTestCase
 {
+    protected function getEnvironmentSetUp($app)
+    {
+        $app['config']->set('cloudfront-proxies.ip-range-data-url', 'https://ip-ranges.amazonaws.com/ip-ranges.json');
+        $app['config']->set('cloudfront-proxies.trust-proxies-headers', Request::HEADER_X_FORWARDED_ALL);
+    }
 
     /**
      * @test

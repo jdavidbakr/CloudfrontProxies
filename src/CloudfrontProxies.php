@@ -32,7 +32,7 @@ class CloudfrontProxies
     {
         // Get the CloudFront IP addresses
         $proxies = Cache::remember('cloudfront-proxy-ip-addresses', now()->addHour(), function () {
-            $ip_range_data = 'https://ip-ranges.amazonaws.com/ip-ranges.json';
+            $ip_range_data = config('cloudfront-proxies.ip-range-data-url');
             $client = app()->make(Guzzle::class);
             $res = $client->get($ip_range_data);
             $data = collect(json_decode($res->getBody())->prefixes)
@@ -42,7 +42,7 @@ class CloudfrontProxies
                 ->pluck('ip_prefix');
             return $data->toArray();
         });
-        $request->setTrustedProxies(array_merge($request->getTrustedProxies(), $proxies), Request::HEADER_X_FORWARDED_ALL);
+        $request->setTrustedProxies(array_merge($request->getTrustedProxies(), $proxies), config('cloudfront-proxies.trust-proxies-headers'));
     }
 
     protected function setCloudfrontHeaders($request)
