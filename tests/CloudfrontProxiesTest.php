@@ -12,7 +12,11 @@ class CloudfrontProxiesTest extends BaseTestCase
     protected function getEnvironmentSetUp($app)
     {
         $app['config']->set('cloudfront-proxies.ip-range-data-url', 'https://ip-ranges.amazonaws.com/ip-ranges.json');
-        $app['config']->set('cloudfront-proxies.trust-proxies-headers', Request::HEADER_X_FORWARDED_ALL);
+        $app['config']->set('cloudfront-proxies.trust-proxies-headers', Request::HEADER_X_FORWARDED_FOR |
+            Request::HEADER_X_FORWARDED_HOST |
+            Request::HEADER_X_FORWARDED_PORT |
+            Request::HEADER_X_FORWARDED_PROTO |
+            Request::HEADER_X_FORWARDED_AWS_ELB);
     }
 
     /**
@@ -73,7 +77,11 @@ class CloudfrontProxiesTest extends BaseTestCase
             ], // server
             null // content
         );
-        $request->setTrustedProxies(['123.45.67/8'], Request::HEADER_X_FORWARDED_ALL);
+        $request->setTrustedProxies(['123.45.67/8'], Request::HEADER_X_FORWARDED_FOR |
+            Request::HEADER_X_FORWARDED_HOST |
+            Request::HEADER_X_FORWARDED_PORT |
+            Request::HEADER_X_FORWARDED_PROTO |
+            Request::HEADER_X_FORWARDED_AWS_ELB);
         $middleware = new CloudfrontProxies;
         $mock = Mockery::mock(Guzzle::class);
         $response = Mockery::mock(ResponseInterface::class);
