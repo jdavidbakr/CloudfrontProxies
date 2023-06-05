@@ -1,11 +1,13 @@
 <?php
 
-use Illuminate\Http\Request;
 use GuzzleHttp\Client as Guzzle;
+use GuzzleHttp\Psr7;
+use GuzzleHttp\Psr7\Response;
+use Illuminate\Http\Request;
 use Illuminate\Routing\UrlGenerator;
-use Psr\Http\Message\ResponseInterface;
-use Orchestra\Testbench\TestCase as BaseTestCase;
 use jdavidbakr\CloudfrontProxies\CloudfrontProxies;
+use Orchestra\Testbench\TestCase as BaseTestCase;
+use Psr\Http\Message\ResponseInterface;
 
 class CloudfrontProxiesTest extends BaseTestCase
 {
@@ -37,9 +39,9 @@ class CloudfrontProxiesTest extends BaseTestCase
         );
         $middleware = new CloudfrontProxies;
         $mock = Mockery::mock(Guzzle::class);
-        $response = Mockery::mock(ResponseInterface::class);
-        $response->shouldReceive('getBody')
-            ->andReturn(json_encode([
+        $response = new Response(200, [
+            'Content-Type' => 'application/json'
+        ], json_encode([
                     'prefixes' => [
                         [
                             'ip_prefix' => '127.0.0.1/16',
@@ -47,7 +49,7 @@ class CloudfrontProxiesTest extends BaseTestCase
                             'service' => 'CLOUDFRONT'
                         ]
                     ]
-                ]));
+        ]));
         $mock->shouldReceive('get')
             ->with('https://ip-ranges.amazonaws.com/ip-ranges.json')
             ->once()
@@ -84,9 +86,9 @@ class CloudfrontProxiesTest extends BaseTestCase
             Request::HEADER_X_FORWARDED_AWS_ELB);
         $middleware = new CloudfrontProxies;
         $mock = Mockery::mock(Guzzle::class);
-        $response = Mockery::mock(ResponseInterface::class);
-        $response->shouldReceive('getBody')
-            ->andReturn(json_encode([
+        $response = new Response(200, [
+            'Content-Type' => 'application/json'
+        ], json_encode([
                     'prefixes' => [
                         [
                             'ip_prefix' => '127.0.0.1/16',
@@ -94,7 +96,7 @@ class CloudfrontProxiesTest extends BaseTestCase
                             'service' => 'CLOUDFRONT'
                         ]
                     ]
-                ]));
+        ]));
         $mock->shouldReceive('get')
             ->with('https://ip-ranges.amazonaws.com/ip-ranges.json')
             ->once()
@@ -126,9 +128,9 @@ class CloudfrontProxiesTest extends BaseTestCase
         );
         $middleware = new CloudfrontProxies;
         $mock = Mockery::mock(Guzzle::class);
-        $response = Mockery::mock(ResponseInterface::class);
-        $response->shouldReceive('getBody')
-            ->andReturn(json_encode([
+        $response = new Response(200, [
+            'Content-Type' => 'application/json'
+        ], json_encode([
                     'prefixes' => [
                         [
                             'ip_prefix' => '127.0.0.1/16',
@@ -170,9 +172,9 @@ class CloudfrontProxiesTest extends BaseTestCase
         );
         $middleware = new CloudfrontProxies;
         $mock = Mockery::mock(Guzzle::class);
-        $response = Mockery::mock(ResponseInterface::class);
-        $response->shouldReceive('getBody')
-            ->andReturn(json_encode([
+        $response = new Response(200, [
+            'Content-Type' => 'application/json'
+        ], json_encode([
                     'prefixes' => [
                         [
                             'ip_prefix' => '127.0.0.1/16',
