@@ -17,8 +17,7 @@
     ],
     "require": {
         "illuminate/support": "5.6.*|5.7.*|5.8.*|6.*|7.*|8.*|^9.0|^10.0",
-        "guzzlehttp/guzzle": "^6.3|^7.0",
-        "laravel/framework": "10.x-dev"
+        "guzzlehttp/guzzle": "^6.3|^7.0"
     },
     "require-dev": {
         "mockery/mockery": "~1.0",
