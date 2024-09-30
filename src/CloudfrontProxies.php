@@ -18,7 +18,7 @@ class CloudfrontProxies
      */
     public function handle($request, Closure $next)
     {
-        if ($request->header('cloudfront-forwarded-proto')) {
+        if ($request->header('cloudfront-forwarded-proto') || $request->header('cloudfront-forwarded-port')) {
             $this->loadTrustedProxies($request);
             $this->setCloudfrontHeaders($request);
         }
@@ -48,6 +48,11 @@ class CloudfrontProxies
     protected function setCloudfrontHeaders($request)
     {
         $headers = $request->headers;
-        $headers->add(['x-forwarded-proto' => $headers->get('cloudfront-forwarded-proto')]);
+        if($request->header('cloudfront-forwarded-proto')) {
+            $headers->add(['x-forwarded-proto' => $headers->get('cloudfront-forwarded-proto')]);
+        }
+        if($request->header('cloudfront-forwarded-port')) {
+            $headers->add(['x-forwarded-port' => $headers->get('cloudfront-forwarded-port')]);
+        }
     }
 }
