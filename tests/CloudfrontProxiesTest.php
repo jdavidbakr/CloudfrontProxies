@@ -11,9 +11,21 @@ use Psr\Http\Message\ResponseInterface;
 
 class CloudfrontProxiesTest extends BaseTestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Trusted proxies are static in Symfony; reset between tests.
+        $request = new Request();
+        $request->setTrustedProxies([], app('config')->get('cloudfront-proxies.trust-proxies-headers'));
+
+        app('cache')->forget('cloudfront-proxy-ip-addresses');
+    }
+
     protected function getEnvironmentSetUp($app)
     {
         $app['config']->set('cloudfront-proxies.ip-range-data-url', 'https://ip-ranges.amazonaws.com/ip-ranges.json');
+        $app['config']->set('cloudfront-proxies.viewer-address-attribute', null);
         $app['config']->set('cloudfront-proxies.trust-proxies-headers', Request::HEADER_X_FORWARDED_FOR |
             Request::HEADER_X_FORWARDED_HOST |
             Request::HEADER_X_FORWARDED_PORT |
@@ -281,5 +293,233 @@ class CloudfrontProxiesTest extends BaseTestCase
         });
 
         $this->assertEquals('https://localhost', $url->to('/'));
+    }
+
+    /**
+     * @test
+     */
+    public function it_triggers_on_cloudfront_viewer_address_header()
+    {
+        $request = new Request(
+            [],
+            [],
+            [],
+            [],
+            [],
+            [
+                'HTTP_CLOUDFRONT_VIEWER_ADDRESS' => '198.51.100.25:443',
+            ],
+            null
+        );
+
+        $middleware = new CloudfrontProxies;
+        $mock = Mockery::mock(Guzzle::class);
+        $response = new Response(200, [
+            'Content-Type' => 'application/json'
+        ], json_encode([
+            'prefixes' => [
+                [
+                    'ip_prefix' => '127.0.0.1/16',
+                    'region' => 'GLOBAL',
+                    'service' => 'CLOUDFRONT'
+                ]
+            ]
+        ]));
+
+        $mock->shouldReceive('get')
+            ->with('https://ip-ranges.amazonaws.com/ip-ranges.json')
+            ->once()
+            ->andReturn($response);
+        app()->instance(Guzzle::class, $mock);
+
+        $middleware->handle($request, function () {
+        });
+
+        $this->assertEquals(['127.0.0.1/16'], $request->getTrustedProxies());
+    }
+
+    /**
+     * @test
+     */
+    public function it_triggers_on_x_amz_cf_id_header()
+    {
+        $request = new Request(
+            [],
+            [],
+            [],
+            [],
+            [],
+            [
+                'HTTP_X_AMZ_CF_ID' => 'example-request-id',
+            ],
+            null
+        );
+
+        $middleware = new CloudfrontProxies;
+        $mock = Mockery::mock(Guzzle::class);
+        $response = new Response(200, [
+            'Content-Type' => 'application/json'
+        ], json_encode([
+            'prefixes' => [
+                [
+                    'ip_prefix' => '127.0.0.1/16',
+                    'region' => 'GLOBAL',
+                    'service' => 'CLOUDFRONT'
+                ]
+            ]
+        ]));
+
+        $mock->shouldReceive('get')
+            ->with('https://ip-ranges.amazonaws.com/ip-ranges.json')
+            ->once()
+            ->andReturn($response);
+        app()->instance(Guzzle::class, $mock);
+
+        $middleware->handle($request, function () {
+        });
+
+        $this->assertEquals(['127.0.0.1/16'], $request->getTrustedProxies());
+    }
+
+    /**
+     * @test
+     */
+    public function it_downloads_cloudfront_ipv4_and_ipv6_ips()
+    {
+        $request = new Request(
+            [],
+            [],
+            [],
+            [],
+            [],
+            [
+                'HTTP_X_AMZ_CF_ID' => 'example-request-id',
+            ],
+            null
+        );
+
+        $middleware = new CloudfrontProxies;
+        $mock = Mockery::mock(Guzzle::class);
+        $response = new Response(200, [
+            'Content-Type' => 'application/json'
+        ], json_encode([
+            'prefixes' => [
+                [
+                    'ip_prefix' => '127.0.0.1/16',
+                    'region' => 'GLOBAL',
+                    'service' => 'CLOUDFRONT'
+                ]
+            ],
+            'ipv6_prefixes' => [
+                [
+                    'ipv6_prefix' => '2600:9000::/28',
+                    'region' => 'GLOBAL',
+                    'service' => 'CLOUDFRONT'
+                ]
+            ]
+        ]));
+
+        $mock->shouldReceive('get')
+            ->with('https://ip-ranges.amazonaws.com/ip-ranges.json')
+            ->once()
+            ->andReturn($response);
+        app()->instance(Guzzle::class, $mock);
+
+        $middleware->handle($request, function () {
+        });
+
+        $this->assertEquals(['127.0.0.1/16', '2600:9000::/28'], $request->getTrustedProxies());
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_store_parsed_viewer_ip_as_request_attribute()
+    {
+        app('config')->set('cloudfront-proxies.viewer-address-attribute', 'cloudfront_viewer_ip');
+
+        $request = new Request(
+            [],
+            [],
+            [],
+            [],
+            [],
+            [
+                'HTTP_CLOUDFRONT_VIEWER_ADDRESS' => '[2600:1f18:abcd::1234]:443',
+            ],
+            null
+        );
+
+        $middleware = new CloudfrontProxies;
+        $mock = Mockery::mock(Guzzle::class);
+        $response = new Response(200, [
+            'Content-Type' => 'application/json'
+        ], json_encode([
+            'prefixes' => [
+                [
+                    'ip_prefix' => '127.0.0.1/16',
+                    'region' => 'GLOBAL',
+                    'service' => 'CLOUDFRONT'
+                ]
+            ]
+        ]));
+
+        $mock->shouldReceive('get')
+            ->with('https://ip-ranges.amazonaws.com/ip-ranges.json')
+            ->once()
+            ->andReturn($response);
+        app()->instance(Guzzle::class, $mock);
+
+        $middleware->handle($request, function () {
+        });
+
+        $this->assertEquals('2600:1f18:abcd::1234', $request->attributes->get('cloudfront_viewer_ip'));
+        $this->assertNull($request->header('x-real-ip'));
+    }
+
+    /**
+     * @test
+     */
+    public function it_sets_client_ip_from_cloudfront_viewer_address()
+    {
+        $request = new Request(
+            [],
+            [],
+            [],
+            [],
+            [],
+            [
+                'HTTP_CLOUDFRONT_VIEWER_ADDRESS' => '198.51.100.25:443',
+                'HTTP_X_FORWARDED_FOR' => '54.240.143.10',
+                'REMOTE_ADDR' => '127.0.0.1',
+            ],
+            null
+        );
+
+        $middleware = new CloudfrontProxies;
+        $mock = Mockery::mock(Guzzle::class);
+        $response = new Response(200, [
+            'Content-Type' => 'application/json'
+        ], json_encode([
+            'prefixes' => [
+                [
+                    'ip_prefix' => '127.0.0.1/16',
+                    'region' => 'GLOBAL',
+                    'service' => 'CLOUDFRONT'
+                ]
+            ]
+        ]));
+
+        $mock->shouldReceive('get')
+            ->with('https://ip-ranges.amazonaws.com/ip-ranges.json')
+            ->once()
+            ->andReturn($response);
+        app()->instance(Guzzle::class, $mock);
+
+        $middleware->handle($request, function () {
+        });
+
+        $this->assertEquals('198.51.100.25', $request->getClientIp());
+        $this->assertEquals('198.51.100.25', $request->header('x-forwarded-for'));
     }
 }

@@ -18,10 +18,17 @@ Further, you probably don't want to expose all IP addresses to your trusted prox
 
 This package contains a simple middleware that does two very important tasks:
 
-1. Downloads the CloudFront IP addresses into the trusted proxy IP addresses. This is cached according to your cache settings for one hour, so you are not making this call on every request.
+1. Downloads the CloudFront IPv4 and IPv6 addresses into the trusted proxy IP addresses. This is cached according to your cache settings for one hour, so you are not making this call on every request.
 2. Adds the `X-Forwarded-Proto` header to your requests based on the `Cloudfront-Forwarded-Proto` value. This helps Symfony behave as if the original headers were what it needed in the first place.
 
-This middleware only fires if the `Cloudfront-Forwarded-Proto` header exists in the incoming headers, so it is ignored if you are using other load balancers or accessing the server directly. Note that CloudFront does not send this header by default - it must be explicitly whitelisted. (See the CloudFront documentation for more information on sending headers and cookies)
+This middleware only fires for requests that look like they came from CloudFront. It checks for any of the following headers:
+
+- `Cloudfront-Forwarded-Proto`
+- `Cloudfront-Forwarded-Port`
+- `Cloudfront-Viewer-Address`
+- `X-Amz-Cf-Id`
+
+So it is ignored if you are using other load balancers or accessing the server directly.
 
 ## Usage
 
@@ -45,6 +52,26 @@ php artisan vendor:publish
 ```
 
 This will publish a `cloudfront-proxies.php` config file that you may edit.
+
+By default, this package maps the parsed `Cloudfront-Viewer-Address` IP into `X-Forwarded-For`, so Laravel/Symfony `Request::getClientIp()` (or `Request::clientIp()`) resolves to the viewer IP when behind CloudFront.
+
+You do **not** need to set `viewer-address-attribute` for `getClientIp()` to work.
+
+`viewer-address-attribute` is only an optional extra request attribute if you want to read the parsed viewer IP directly from request attributes:
+
+```php
+// config/cloudfront-proxies.php
+'viewer-address-attribute' => 'cloudfront_viewer_ip',
+```
+
+By default, this optional attribute is disabled (`null`).
+
+If you want to disable that behavior:
+
+```php
+// config/cloudfront-proxies.php
+'viewer-address-to-forwarded-for' => false,
+```
 
 And everything should be good to go from here.
 

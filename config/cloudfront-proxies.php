@@ -7,6 +7,18 @@ return [
      * URL to pull the ip ranges from amazon
      */
     'ip-range-data-url' => 'https://ip-ranges.amazonaws.com/ip-ranges.json',
+
+    /**
+     * Optional request attribute name to store parsed IP from CloudFront-Viewer-Address.
+     * Set to null to disable.
+     */
+    'viewer-address-attribute' => null,
+
+    /**
+     * If true, maps CloudFront-Viewer-Address IP into X-Forwarded-For so
+     * Request::clientIp() resolves to the viewer IP.
+     */
+    'viewer-address-to-forwarded-for' => true,
     
     /**
      * Headers defined in the TrustProxies class
